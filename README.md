@@ -1,4 +1,4 @@
-# 🛡️ Ciber Batalla: Laboratorio de Ataque y Defensa
+# 🛡️ Ciber Batalla: Laboratorio de Ataque
 # AUTOR : CRISTHIAN SAMUEL ZAMBRANO RIVERA
 
 ## 📋 Descripción General
