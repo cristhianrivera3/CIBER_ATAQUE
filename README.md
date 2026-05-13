@@ -28,15 +28,6 @@ Laboratorio educativo que simula un entorno real de ciberseguridad donde un atac
 - **Hydra 9.6** - Ataque de fuerza bruta
 - **Python 3** - Script de post-explotación
 
-## 📷 Capturas de Pantalla
-![Arquitectura](imagenes/arquitectura.png)
-![Kali IP](imagenes/kali-ip.png)
-![Windows IP](imagenes/windows-ip.png)
-![Ping exitoso](imagenes/ping-exitoso.png)
-![Conexión RDP](imagenes/conexion-rdp.png)
-![Ventana Rebelde](imagenes/ventana-rebelde.png)
-![Ataque Hydra](imagenes/hydra-ataque.png)
-
 ## 📁 Estructura del Repositorio
 Ciber-Batalla-Laboratorio/
 ├── README.md
